@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.controllers import etl_controller
+from app.controllers import etl_controller, analitica_controller
 from app.database import Base, engine
 from app.models import entidad_sql  # noqa: F401
 
@@ -19,6 +19,7 @@ def on_startup():
 
 
 app.include_router(etl_controller.router)
+app.include_router(analitica_controller.router)
 
 
 @app.get("/", tags=["Healthcheck"])
