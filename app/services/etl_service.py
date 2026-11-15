@@ -25,7 +25,17 @@ from app.config import settings
 from app.database import productos_collection
 
 
+import requests
+from app.config import settings
+from app.database import productos_collection
+
+
 def extraer_datos_api(cantidad: int) -> dict:
+    # --- ESTAS DOS LÍNEAS SON LAS QUE AGREGAS ---
+    if cantidad <= 0:
+        raise ValueError("La cantidad debe ser mayor a 0")
+    # --------------------------------------------
+
     nuevos = 0
     ya_existentes = 0
     skip = 0
