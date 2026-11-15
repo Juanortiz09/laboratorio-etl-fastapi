@@ -21,3 +21,44 @@ def reset_pipeline(db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al reiniciar las bases de datos: {str(e)}",
         )
+
+
+
+from fastapi import HTTPException, status
+from app.views.schemas import ExtraerRequest, ExtraerResponse
+from app.services import etl_service
+
+
+@router.post("/extraer", response_model=ExtraerResponse, status_code=status.HTTP_201_CREATED)
+def endpoint_extraer(payload: ExtraerRequest):
+    try:
+        return etl_service.extraer_datos_api(payload.cantidad)
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Error en extracción: {str(exc)}")
+
+
+
+        from app.views.schemas import PerfilDualResponse
+
+
+@router.get(
+    "/perfil/{id}",
+    response_model=PerfilDualResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Consultar perfil dual de un producto (MongoDB vs MySQL)",
+)
+def endpoint_perfil_dual(id: int, db: Session = Depends(get_db)):
+    try:
+        return etl_service.obtener_perfil_dual(id, db)
+    except LookupError as le:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(le),
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al consultar perfil dual: {str(exc)}",
+        )
