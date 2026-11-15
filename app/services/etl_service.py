@@ -80,11 +80,18 @@ def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
     doc_mongo = productos_collection.find_one({"_id": id_registro})
     reg_sql = db.query(ProductMaster).filter(ProductMaster.id == id_registro).first()
 
-
-
-def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
-    doc_mongo = productos_collection.find_one({"_id": id_registro})
-    reg_sql = db.query(ProductMaster).filter(ProductMaster.id == id_registro).first()
-
     if doc_mongo is None and reg_sql is None:
         raise LookupError(f"El registro con ID {id_registro} no existe en MongoDB ni en MySQL")
+
+    datos_mongo = None
+    if doc_mongo is not None:
+        datos_mongo = dict(doc_mongo)
+        if "_id" in datos_mongo:
+            datos_mongo["_id"] = str(datos_mongo["_id"])
+
+    datos_sql = None
+    if reg_sql is not None:
+        datos_sql = {
+            col.name: getattr(reg_sql, col.name)
+            for col in reg_sql.__table__.columns
+        }
