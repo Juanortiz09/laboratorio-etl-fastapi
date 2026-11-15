@@ -64,3 +64,11 @@ def extraer_datos_api(cantidad: int) -> dict:
 
         skip += len(productos)
         restantes -= len(productos)
+
+    return {
+        "mensaje": "Datos extraídos exitosamente",
+        "nuevos": nuevos,
+        "ya_existentes": ya_existentes,
+        "fuente": "DummyJSON API",
+        "status": 201
+    }
