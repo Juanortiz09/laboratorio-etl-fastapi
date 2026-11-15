@@ -95,3 +95,21 @@ def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
             col.name: getattr(reg_sql, col.name)
             for col in reg_sql.__table__.columns
         }
+
+    if datos_mongo is not None and datos_sql is not None:
+        estado = "SINCRONIZADO"
+        mensaje = "El registro existe tanto en Staging (MongoDB) como en Analítica (MySQL)"
+    elif datos_mongo is not None:
+        estado = "SOLO_STAGING"
+        mensaje = "El registro existe únicamente en Staging (MongoDB); falta transformar a MySQL"
+    else:
+        estado = "SOLO_ANALITICA"
+        mensaje = "El registro existe únicamente en Analítica (MySQL)"
+
+    return {
+        "id": id_registro,
+        "estado_sincronizacion": estado,
+        "mensaje": mensaje,
+        "datos_staging_mongo": datos_mongo,
+        "datos_analitica_sql": datos_sql,
+    }
