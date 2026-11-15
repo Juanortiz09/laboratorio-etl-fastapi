@@ -66,9 +66,8 @@ def extraer_datos_api(cantidad: int) -> dict:
         restantes -= len(productos)
 
     return {
-        "mensaje": "Datos extraídos exitosamente",
-        "nuevos": nuevos,
+        "mensaje": "Datos extraídos exitosamente desde DummyJSON",
+        "total_solicitados": cantidad,
+        "nuevos_insertados": nuevos,
         "ya_existentes": ya_existentes,
-        "fuente": "DummyJSON API",
-        "status": 201
     }
