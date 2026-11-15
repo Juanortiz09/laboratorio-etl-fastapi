@@ -19,3 +19,28 @@ def reset_datos(db: Session) -> dict:
         "documentos_eliminados_mongo": docs_eliminados,
         "registros_eliminados_sql": registros_sql,
     }
+
+    import requests
+from app.config import settings
+from app.database import productos_collection
+
+
+def extraer_datos_api(cantidad: int) -> dict:
+    nuevos = 0
+    ya_existentes = 0
+    skip = 0
+    restantes = cantidad
+
+    while restantes > 0:
+        limit = min(restantes, 100)
+        response = requests.get(
+            settings.API_URL,
+            params={"limit": limit, "skip": skip},
+            timeout=15
+        )
+        response.raise_for_status()
+        productos = response.json().get("products", [])
+        if not productos:
+            break
+        skip += len(productos)
+        restantes -= len(productos)
