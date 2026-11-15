@@ -20,10 +20,6 @@ def reset_datos(db: Session) -> dict:
         "registros_eliminados_sql": registros_sql,
     }
 
-    import requests
-from app.config import settings
-from app.database import productos_collection
-
 
 import requests
 from app.config import settings
@@ -31,10 +27,8 @@ from app.database import productos_collection
 
 
 def extraer_datos_api(cantidad: int) -> dict:
-    # --- ESTAS DOS LÍNEAS SON LAS QUE AGREGAS ---
     if cantidad <= 0:
         raise ValueError("La cantidad debe ser mayor a 0")
-    # --------------------------------------------
 
     nuevos = 0
     ya_existentes = 0
@@ -52,5 +46,21 @@ def extraer_datos_api(cantidad: int) -> dict:
         productos = response.json().get("products", [])
         if not productos:
             break
+
+        for prod in productos:
+            prod_id = prod["id"]
+            documento = dict(prod)
+            documento["_id"] = prod_id
+
+            resultado = productos_collection.update_one(
+                {"_id": prod_id},
+                {"$setOnInsert": documento},
+                upsert=True
+            )
+            if resultado.upserted_id is not None:
+                nuevos += 1
+            else:
+                ya_existentes += 1
+
         skip += len(productos)
         restantes -= len(productos)
