@@ -1,5 +1,7 @@
+import requests
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from app.config import settings
 from app.database import productos_collection
 from app.models.entidad_sql import ProductMaster
 
@@ -21,11 +23,6 @@ def reset_datos(db: Session) -> dict:
     }
 
 
-import requests
-from app.config import settings
-from app.database import productos_collection
-
-
 def extraer_datos_api(cantidad: int) -> dict:
     if cantidad <= 0:
         raise ValueError("La cantidad debe ser mayor a 0")
@@ -38,9 +35,9 @@ def extraer_datos_api(cantidad: int) -> dict:
     while restantes > 0:
         limit = min(restantes, 100)
         response = requests.get(
-            settings.API_URL,
+            settings.DUMMYJSON_URL,
             params={"limit": limit, "skip": skip},
-            timeout=15
+            timeout=15,
         )
         response.raise_for_status()
         productos = response.json().get("products", [])
@@ -55,7 +52,7 @@ def extraer_datos_api(cantidad: int) -> dict:
             resultado = productos_collection.update_one(
                 {"_id": prod_id},
                 {"$setOnInsert": documento},
-                upsert=True
+                upsert=True,
             )
             if resultado.upserted_id is not None:
                 nuevos += 1
@@ -71,9 +68,6 @@ def extraer_datos_api(cantidad: int) -> dict:
         "nuevos_insertados": nuevos,
         "ya_existentes": ya_existentes,
     }
-
-from sqlalchemy.orm import Session
-from app.models.entidad_sql import ProductMaster
 
 
 def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
