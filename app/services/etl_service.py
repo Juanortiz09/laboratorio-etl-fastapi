@@ -71,3 +71,11 @@ def extraer_datos_api(cantidad: int) -> dict:
         "nuevos_insertados": nuevos,
         "ya_existentes": ya_existentes,
     }
+
+from sqlalchemy.orm import Session
+from app.models.entidad_sql import ProductMaster
+
+
+def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
+    doc_mongo = productos_collection.find_one({"_id": id_registro})
+    reg_sql = db.query(ProductMaster).filter(ProductMaster.id == id_registro).first()
