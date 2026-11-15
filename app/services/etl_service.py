@@ -79,3 +79,12 @@ from app.models.entidad_sql import ProductMaster
 def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
     doc_mongo = productos_collection.find_one({"_id": id_registro})
     reg_sql = db.query(ProductMaster).filter(ProductMaster.id == id_registro).first()
+
+
+
+def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
+    doc_mongo = productos_collection.find_one({"_id": id_registro})
+    reg_sql = db.query(ProductMaster).filter(ProductMaster.id == id_registro).first()
+
+    if doc_mongo is None and reg_sql is None:
+        raise LookupError(f"El registro con ID {id_registro} no existe en MongoDB ni en MySQL")
