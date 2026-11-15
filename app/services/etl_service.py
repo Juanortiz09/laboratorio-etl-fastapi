@@ -52,7 +52,7 @@ def extraer_datos_api(cantidad: int) -> dict:
         response = requests.get(
             settings.DUMMYJSON_URL,
             params={"limit": limit, "skip": skip},
-            timeout=15
+            timeout=15,
         )
 
         response.raise_for_status()
@@ -71,7 +71,7 @@ def extraer_datos_api(cantidad: int) -> dict:
             resultado = productos_collection.update_one(
                 {"_id": prod_id},
                 {"$setOnInsert": documento},
-                upsert=True
+                upsert=True,
             )
 
             if resultado.upserted_id is not None:
@@ -156,6 +156,7 @@ def obtener_perfil_dual(id_registro: int, db: Session) -> dict:
         "datos_staging_mongo": datos_mongo,
         "datos_analitica_sql": datos_sql,
     }
+
 
 # ==========================================
 # 4. TRANSFORMACION Y CARGA A MYSQL

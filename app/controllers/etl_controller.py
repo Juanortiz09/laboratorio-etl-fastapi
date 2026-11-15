@@ -48,6 +48,7 @@ def reset_pipeline(db: Session = Depends(get_db)):
     "/extraer",
     response_model=ExtraerResponse,
     status_code=status.HTTP_201_CREATED,
+    summary="Extraer productos desde DummyJSON hacia MongoDB",
 )
 def endpoint_extraer(payload: ExtraerRequest):
     try:
